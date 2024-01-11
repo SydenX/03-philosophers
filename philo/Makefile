@@ -6,7 +6,7 @@
 #    By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/30 13:47:45 by jtollena          #+#    #+#              #
-#    Updated: 2024/01/11 15:19:56 by jtollena         ###   ########.fr        #
+#    Updated: 2024/01/11 15:22:17 by jtollena         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@ NAME = philo
 
 SOURCES = srcs/main.c \
 			srcs/utils.c \
-			srcs/philo.c
+			srcs/philo.c \
+			srcs/atoi.c
 
 OBJECTS = $(SOURCES:.c=.o)
 INCLUDES = includes
