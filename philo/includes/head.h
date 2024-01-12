@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/11 15:29:50 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/12 15:03:18 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,31 @@ typedef enum e_state {
 }	t_state;
 
 typedef struct s_philo {
-	int		id;
-	t_state state;
-	int 	timeToDie;
-	int		leftId;
-	int		rightId;
+	int				id;
+	t_state 		state;
+	int 			timeToDie;
+	struct s_philo	*left;
+	struct s_philo	*right;
+	pthread_t		thread;
 }	t_philo;
 
 typedef struct s_philos {
 	t_philo	*philo;
 	int		size;
 }	t_philos;
+
+typedef struct s_game {
+	t_philos	philos;
+	int			time_to_die;
+	int			time_to_eat;
+	int			time_to_sleep;
+	int			eat_at_least;
+}	t_game;
+
+typedef struct s_col {
+	t_game	*game;
+	int		philoid;
+}	t_col;
 
 int		launch(int time, void *runnable, void *arg);
 int		isInt(char *str);
