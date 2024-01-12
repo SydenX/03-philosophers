@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/12 18:08:36 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:33:22 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,21 +64,6 @@ float	time_diff(struct timeval *start, struct timeval *end) {
   return (end->tv_sec - start->tv_sec) + 1e-6 * (end->tv_usec - start->tv_usec);
 }
 
-int	go_next_tick(t_game *game)
-{
-	int i;
-
-	i = 0;
-	while(i < game->philos.size)
-	{
-		if (game->philos.philo[i].actionmade != game->time)
-			return (0);
-		i++;
-	}
-	game->time++;
-	return (1);
-}
-
 void	*circle_of_life(void *arg)
 {
 	t_col 	*col;
@@ -91,12 +76,12 @@ void	*circle_of_life(void *arg)
 	philo = get_by_id(&col->game->philos, col->philoid);
 	pthread_mutex_unlock(&col->count_mutex);
 	philo->actionmade = -1;
-	start = (1 * (philo->id - 1));
+	start = 0;//(1 * (philo->id - 1));
 	while (start < col->game->time_to_die)
 	{
-		pthread_mutex_lock(&col->count_mutex);
 		if (philo->actionmade != col->game->time)
 		{
+			pthread_mutex_lock(&col->count_mutex);
 			int death = 0;
 			int i = 0;
 			while (i < col->game->philos.size)
@@ -114,7 +99,7 @@ void	*circle_of_life(void *arg)
 				printf("%d %d has taken a fork\n", col->game->time, philo->id);
 				printf("%d %d is eating\n", col->game->time, philo->id);
 			}
-			else if (philo->state == EATING)
+			if (philo->state == EATING)
 			{
 				timeate++;
 				if (timevar == col->game->time_to_eat)
@@ -126,7 +111,7 @@ void	*circle_of_life(void *arg)
 				else
 					timevar++;
 			}
-			else if (philo->state == SLEEPING)
+			if (philo->state == SLEEPING)
 			{
 				if (timevar == col->game->time_to_sleep)
 				{
@@ -149,12 +134,11 @@ void	*circle_of_life(void *arg)
 				}
 			}
 			philo->actionmade = col->game->time;
-			if (philo->actionmade == col->game->time)
-				go_next_tick(col->game);
-			start++;
+			if (philo->actionmade != col->game->time)
+				start++;
+			pthread_mutex_unlock(&col->count_mutex);
+			usleep(1000);
 		}
-		pthread_mutex_unlock(&col->count_mutex);
-		usleep(1000);
 	}
 	pthread_mutex_lock(&col->count_mutex);
 	philo->state = DEAD;
@@ -209,17 +193,33 @@ int	check_to_addtime(void *arg)
 	return (death);
 }
 
+int	go_next_tick(t_col *col)
+{
+	int i;
+
+	i = 0;
+	pthread_mutex_lock(&col->count_mutex);
+	while(i < col->game->philos.size)
+	{
+		if (col->game->philos.philo[i].actionmade != col->game->time)
+			return (0);
+		i++;
+	}
+	col->game->time++;
+	return (1);
+}
+
 void	*addtime(void *arg)
 {
 	t_col	*col;
 
 	col = (t_col *)arg;
-	int	d = 0;
-	while (d == 0){
+	int d = 0;
+	while (d == 0)
+	{
 		d = check_to_addtime(col->game);
-		col->game->time++;
+		go_next_tick(col);
 		pthread_mutex_unlock(&col->count_mutex);
-		usleep(1000);
 	}
 	return (NULL);
 }
@@ -247,7 +247,7 @@ void	*run(void *arg)
 		i++;
 	}
 	// pthread_create(&debugt, NULL, &debug, (void *)game);
-	// pthread_create(&timet, NULL, &addtime, (void *)&col);
+	pthread_create(&timet, NULL, &addtime, (void *)&col);
 	i = 0;
 	while (i < game->philos.size)
 	{
