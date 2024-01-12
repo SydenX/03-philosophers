@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/12 15:39:48 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/12 16:16:30 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_philo	*get_by_id(t_philos *philos, int id)
 	return (NULL);
 }
 
-int	can_eat(t_philo *philos, t_philo philo)
+int	can_eat(t_philo philo)
 {
 	if (philo.state == EATING)
 		return (0);
@@ -69,25 +69,81 @@ void	*circle_of_life(void *arg)
 	t_col 	*col;
 	t_philo	*philo;
 	int 	start;
+	int 	timevar;
 
 	col = (t_col *)arg;
 	philo = get_by_id(&col->game->philos, col->philoid);
-	start = 0;
-	usleep(1000000 - (1000 * (philo->id - 1)));
+	start = (1 * (philo->id - 1));
 	while (start < col->game->time_to_die)
 	{
-		if (philo->id == 1)
-			printf("%dms\n",start);
+		if (can_eat(*philo) && philo->state == THINKING)
+		{
+			start = 0;
+			timevar = 0;
+			philo->state = EATING;
+			// printf("Philo %d is now EATING\n", philo->id);
+		}
+		if (philo->state == EATING)
+		{
+			if (timevar == col->game->time_to_eat)
+			{
+				philo->state = SLEEPING;
+				timevar = 0;
+				// printf("Philo %d is now SLEEPING\n", philo->id);
+			}
+			else
+				timevar++;
+		}
+		if (philo->state == SLEEPING)
+		{
+			if (timevar == col->game->time_to_sleep)
+			{
+				philo->state = THINKING;
+				// printf("Philo %d is now THINKING\n", philo->id);
+			}
+			timevar++;
+		}
 		start++;
 		usleep(1000);
+	}
+	philo->state = DEAD;
+	printf("!!! Philo %d is now DEAD\n", philo->id);
+	return (NULL);
+}
+
+int	exec_debug(t_game *game)
+{
+	int i = 0;
+	int death = 0;
+	printf("Now eating >>");
+	while (i < game->philos.size)
+	{
+		if (game->philos.philo[i].state == EATING)
+			printf(" %d", game->philos.philo[i].id);
+		if (game->philos.philo[i].state == DEAD){
+			death++; break;}
+		i++;
+	}
+	printf("\n");
+	return (death);
+}
+
+void	*debug(void *arg)
+{
+	t_game	*game = (t_game *)arg;
+	int	d = 0;
+	while (d == 0){
+		d = exec_debug(game);
+		usleep(100000);
 	}
 	return (NULL);
 }
 
 void	*run(void *arg)
 {
-	int	i;
-	t_game *game;
+	int		i;
+	pthread_t	debugt;
+	t_game 	*game;
 	t_col 	col;
 
 	game = (t_game *)arg;
@@ -100,10 +156,10 @@ void	*run(void *arg)
 		usleep(1000);
 		i++;
 	}
-	
+	pthread_create(&debugt, NULL, &debug, (void *)game);
 	i = 0;
 	while (i < game->philos.size)
-	{	
+	{
 		pthread_join(get_by_id(&game->philos, i + 1)->thread, NULL);
 		i++;
 	}
@@ -138,6 +194,7 @@ int	main(int argc, char **argv)
 	while (i < numphilos)
 	{
 		philos.philo[i].id = i + 1;
+		philos.philo[i].state = THINKING;
 		i++;
 	}
 	game.philos = philos;

@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/12 15:03:18 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/12 16:02:15 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@
 typedef enum e_state {
 	EATING,
 	SLEEPING,
-	THINKING
+	THINKING,
+	DEAD
 }	t_state;
 
 typedef struct s_philo {
