@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/12 16:02:15 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/12 17:54:55 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ typedef struct s_philo {
 	struct s_philo	*left;
 	struct s_philo	*right;
 	pthread_t		thread;
+	int				finished_eat;
+	int				actionmade;
 }	t_philo;
 
 typedef struct s_philos {
@@ -47,11 +49,14 @@ typedef struct s_game {
 	int			time_to_eat;
 	int			time_to_sleep;
 	int			eat_at_least;
+	int			finished_eat;
+	int			time;
 }	t_game;
 
 typedef struct s_col {
 	t_game	*game;
 	int		philoid;
+	pthread_mutex_t count_mutex;
 }	t_col;
 
 int		launch(int time, void *runnable, void *arg);
