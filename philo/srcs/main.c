@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:17:29 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 13:57:06 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	check_args(int argc, char **argv)
 	if (argc == 6)
 		if (!isposint(argv[5]))
 			return (error("Args can only be (positive) numbers."));
-	return (1);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -31,8 +31,8 @@ int	main(int argc, char **argv)
 	t_game		game;
 	int			numphilos;
 
-	if (check_args(argc, argv) == 0)
-		return (0);
+	if (check_args(argc, argv) == 1)
+		return (1);
 	numphilos = ft_atoi(argv[1]);
 	philos.philo = malloc(numphilos * sizeof(t_philo));
 	if (philos.philo == NULL)

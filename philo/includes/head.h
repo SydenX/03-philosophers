@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:36:18 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 13:55:35 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ typedef struct s_game {
 
 typedef struct s_col {
 	t_game			*game;
-	t_philo			*philo;
+	int				philoid;
 	pthread_mutex_t	count_mutex;
 }	t_col;
 
@@ -72,13 +72,13 @@ long	ft_atoi(const char *str);
 int		cof_check_death(t_col *col, int timevar, t_philo *philo);
 void	cof_end(t_col *col, t_philo *philo);
 int		cof_check_eatatleast(t_col *col, t_philo *philo, int timeate);
-void	cof_setupvar(t_col *col);
+void	cof_setupvar(t_col *col, t_philo *philo);
 void	*circle_of_life(void *arg);
 
 //Circle of life 2
 void	cof_checkto_eat(t_col *col, t_philo *philo);
 void	cof_checkto_think(t_col *col, t_philo *philo);
-int		cof_checkto_sleep(t_col *col, t_philo *philo);
+void	cof_checkto_sleep(t_col *col, t_philo *philo);
 
 //Threads
 int		threads_init(int numphilos, t_philos *philos, t_game *game);

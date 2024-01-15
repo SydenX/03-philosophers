@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:07:09 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:35:31 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 13:56:42 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,9 @@ void	cof_checkto_think(t_col *col, t_philo *philo)
 	}
 }
 
-int	cof_checkto_sleep(t_col *col, t_philo *philo)
+void	cof_checkto_sleep(t_col *col, t_philo *philo)
 {
 	cof_checkto_eat(col, philo);
-	philo->timeate = 0;
 	if (philo->state == EATING)
 	{
 		if (philo->timevar == col->game->time_to_eat)
@@ -66,9 +65,8 @@ int	cof_checkto_sleep(t_col *col, t_philo *philo)
 			printf("%d %d is sleeping\n", col->game->time, philo->id);
 		}
 		else
-			col->philo->timevar++;
+			philo->timevar++;
 	}
 	cof_checkto_think(col, philo);
 	philo->start++;
-	return (philo->timeate);
 }

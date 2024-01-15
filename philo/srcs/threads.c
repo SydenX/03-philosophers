@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:09:15 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:22:53 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 13:50:32 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	run(t_game *game, int i)
 	while (i < game->philos.size)
 	{
 		pthread_mutex_lock(&col.count_mutex);
-		col.philo = &game->philos.philo[i];
+		col.philoid = i + 1;
 		pthread_create(&get_by_id(&game->philos, i + 1)->thread,
 			NULL, &circle_of_life, (void *)&col);
 		i++;
