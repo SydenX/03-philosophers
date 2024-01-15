@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:05:53 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:55:22 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 14:19:08 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void	*circle_of_life(void *arg)
 
 	col = (t_col *)arg;
 	philo = get_by_id(&col->game->philos, col->philoid);
+	cof_setupvar(col, philo);
 	setup_eat(col, philo);
 	while (philo->start < col->game->time_to_die)
 	{

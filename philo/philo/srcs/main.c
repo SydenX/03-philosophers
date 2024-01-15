@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:57:06 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 14:25:17 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,11 @@ int	check_args(int argc, char **argv)
 {
 	if (argc < 5 || argc > 6)
 		return (error("Should be 4 or 5 arguments"));
-	if (!isposint(argv[1]) || !isposint(argv[2])
-		|| !isposint(argv[3]) || !isposint(argv[4]))
+	if (!isposint(argv[1]))
+		return (error("Args can only be (positive) numbers."));
+	if (argv[1][0] == '0')
+		return (error("At least one philosopher is required."));
+	if (!isposint(argv[2]) || !isposint(argv[3]) || !isposint(argv[4]))
 		return (error("Args can only be (positive) numbers."));
 	if (argc == 6)
 		if (!isposint(argv[5]))
