@@ -6,35 +6,40 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 15:02:44 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/11 15:11:17 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 13:15:10 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-int	launch(int time, void *runnable, void *arg)
+t_philo	*get_by_id(t_philos *philos, int id)
 {
-	pthread_t thread;
+	int	i;
 
-	pthread_create(&thread, NULL, runnable, arg);
-	pthread_join(thread, NULL);
-	return ((int)thread);
+	i = 0;
+	while (i < philos->size)
+	{
+		if (philos->philo[i].id == id)
+			return (&philos->philo[i]);
+		i++;
+	}
+	return (NULL);
 }
 
-int	isPosInt(char *str)
+int	isposint(char *str)
 {
-	if (!isInt(str))
+	if (!isint(str))
 		return (0);
 	if (*str == '-')
 		return (0);
 	return (1);
 }
 
-int	isInt(char *str)
+int	isint(char *str)
 {
 	if (*str == '-')
 		str++;
-	while(*str)
+	while (*str)
 	{
 		if (*str < '0' || *str > '9')
 			return (0);
@@ -43,8 +48,8 @@ int	isInt(char *str)
 	return (1);
 }
 
-int error(char *str)
+int	error(char *str)
 {
 	printf("\nError;\n%s\n", str);
-	return (1);	
+	return (1);
 }

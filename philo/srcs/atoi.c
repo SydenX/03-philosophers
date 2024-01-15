@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 15:21:39 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/11 15:22:05 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/15 12:56:52 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ static int	ft_isoverflow(unsigned long long nb, const char *str, int negation)
 {
 	if (nb >= 9223372036854775807 / 10 && 
 		(nb > 9223372036854775807 / 10 
-		|| str[0] - '0' > 9223372036854775807 % 10))
+			|| str[0] - '0' > 9223372036854775807 % 10))
 	{
 		if (negation == 1)
 			return (-1);
