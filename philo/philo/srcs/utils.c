@@ -6,24 +6,29 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 15:02:44 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 14:23:50 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/16 13:21:53 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-t_philo	*get_by_id(t_philos *philos, int id)
+int	ft_usleep(size_t milliseconds)
 {
-	int	i;
+	size_t	start;
 
-	i = 0;
-	while (i < philos->size)
-	{
-		if (philos->philo[i].id == id)
-			return (&philos->philo[i]);
-		i++;
-	}
-	return (NULL);
+	start = get_current_time();
+	while ((get_current_time() - start) < milliseconds)
+		usleep(500);
+	return (0);
+}
+
+size_t	get_current_time(void)
+{
+	struct timeval	time;
+
+	if (gettimeofday(&time, NULL) == -1)
+		write(2, "gettimeofday() error\n", 22);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
 int	isposint(char *str)

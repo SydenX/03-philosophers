@@ -6,7 +6,7 @@
 #    By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/30 13:47:45 by jtollena          #+#    #+#              #
-#    Updated: 2024/01/15 14:32:10 by jtollena         ###   ########.fr        #
+#    Updated: 2024/01/16 13:14:18 by jtollena         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,16 +14,11 @@ NAME = philo
 
 SOURCES = srcs/main.c \
 			srcs/utils.c \
-			srcs/philo.c \
-			srcs/circleof_1.c \
-			srcs/circleof_2.c \
-			srcs/threads.c \
-			srcs/tick.c \
 			srcs/atoi.c
 
 OBJECTS = $(SOURCES:.c=.o)
 INCLUDES = includes
-FLAGS = -Wall -Wextra -Werror
+FLAGS = #-Wall -Wextra -Werror
 
 %.o: %.c
 	gcc $(FLAGS) -I $(INCLUDES) -c $< -o $@
@@ -35,6 +30,7 @@ clean:
 	
 $(NAME): $(OBJECTS) $(INCLUDES)
 	gcc $(OBJECTS) -lpthread -o $(NAME)
+	make clean
 
 fclean: clean
 	rm $(NAME)
