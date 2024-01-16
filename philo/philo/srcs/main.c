@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/16 14:11:39 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/16 14:34:16 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,10 @@ int	is_fully_ate(t_game *game)
 		return (0);
 	while (i < game->size)
 	{
-		pthread_mutex_lock(game->philos[i].statem);
+		pthread_mutex_lock(&game->philos[i].statem);
 		if (game->philos[i].timeate >= game->eat_at_least)
 			hasate++;
-		pthread_mutex_unlock(game->philos[i].statem);
+		pthread_mutex_unlock(&game->philos[i].statem);
 		i++;
 	}
 	if (hasate == game->size)
@@ -82,10 +82,10 @@ int	is_any_death(t_game *game)
 	i = 0;
 	while (i < game->size)
 	{
-		pthread_mutex_lock(game->philos[i].statem);
-		if (game->tick - game->philos[i].start > game->time_to_die)
-			return (pthread_mutex_unlock(game->philos[i].statem), game->philos[i].id);
-		pthread_mutex_unlock(game->philos[i].statem);
+		pthread_mutex_lock(&game->philos[i].statem);
+		if (game->tick - game->philos[i].start >= game->time_to_die)
+			return (pthread_mutex_unlock(&game->philos[i].statem), game->philos[i].id);
+		pthread_mutex_unlock(&game->philos[i].statem);
 		i++;
 	}
 	return (0);
@@ -97,15 +97,14 @@ void	*timer(void *arg)
 
 	game = (t_game *)arg;
 	game->tick = 0;
-	printf("%d\n", game->philos[1].start);
 	while (1)
 	{
-		if (is_any_death(game) == 0 || is_fully_ate(game))
+		if (is_any_death(game) == 0 && is_fully_ate(game) == 0)
 			game->tick++;
 		else
 		{
 			if (is_fully_ate(game) == 0)
-				printf("%d died.\n", is_any_death(game));
+				printf("%d %d died.\n", game->tick, is_any_death(game));
 			else
 				printf("All philos ate at least %d times.\n", game->eat_at_least);
 			break;
@@ -125,15 +124,16 @@ void	run(t_game *game, int i)
 	// 		NULL, &circle_of_life, (void *)&game);
 	// 	i++;
 	// }
-	pthread_create(&timert, NULL, &timer, (void *)&game);
+	pthread_create(&timert, NULL, &timer, (void *)game);
 	pthread_join(timert, NULL);
-	while (i < game->size)
-		pthread_mutex_destroy(game->philos[i++].fork_l);
+	// while (i < game->size)
+	// 	pthread_mutex_destroy(game->philos[i++].fork_l);
 }
 
 int	threads_init(int numphilos, t_game *game)
 {
 	pthread_t	mainthread;
+	t_philo		philos[200];
 	int			i;
 
 	i = 0;
@@ -145,17 +145,23 @@ int	threads_init(int numphilos, t_game *game)
 	}
 	while (i < numphilos)
 	{
-		game->philos[i].id = i + 1;
-		game->philos[i].state = THINKING;
-		game->philos[i].fork_r = &game->forks[i];
-		game->philos[i].timeate = 0;
-		game->philos[i].start = 0;
+		pthread_mutex_init(&philos[i].statem, NULL);
+		philos[i].id = i + 1;
+		philos[i].state = THINKING;
+		philos[i].fork_r = &game->forks[i];
+		philos[i].timeate = 0;
+		philos[i].start = 0;
 		if (i == numphilos - 1)
-			game->philos[i].fork_l = &game->forks[0];
+			philos[i].fork_l = &game->forks[0];
 		i++;
 	}
+	game->philos = philos;
 	run(game, 0);
-	return (free(game->philos), 0);
+	i = 0;
+	while (i < numphilos)
+		pthread_mutex_destroy(&philos[i++].statem);
+	// return (free(game->philos), 0);
+	return 0;
 }
 
 pthread_mutex_t	*initforks(pthread_mutex_t *forks)
@@ -183,8 +189,6 @@ int	main(int argc, char **argv)
 	if (numphilos > 200)
 		return (error("Too many Philosophers (max 200)."));
 	game.philos = malloc(numphilos * sizeof(t_philo));
-	if (game.philos == NULL)
-		return (error("Memory allocation error."));
 	game.size = numphilos;
 	game.time_to_die = ft_atoi(argv[2]);
 	game.time_to_eat = ft_atoi(argv[3]);

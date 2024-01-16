@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/16 14:00:09 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/16 14:30:54 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct s_philo {
 	t_state			state;
 	pthread_mutex_t	*fork_l;
 	pthread_mutex_t	*fork_r;
-	pthread_mutex_t	*statem;
+	pthread_mutex_t	statem;
 	pthread_t		thread;
 	int				finished_eat;
 	int				actionmade;
