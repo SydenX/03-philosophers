@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:09:15 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:50:32 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/17 15:26:18 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	*one_philo(void *arg)
 	{
 		if (start++ == 0)
 			printf("%d %d has taken a fork\n", start - 1, 1);
-		usleep(1000);
+		ft_usleep(1);
 	}
 	return (printf("%d %d died\n", start, 1), NULL);
 }
@@ -66,10 +66,13 @@ void	run(t_game *game, int i)
 		pthread_mutex_lock(&col.count_mutex);
 		col.philoid = i + 1;
 		pthread_create(&get_by_id(&game->philos, i + 1)->thread,
-			NULL, &circle_of_life, (void *)&col);
+			NULL, &cycle, (void *)&col);
 		i++;
 	}
 	pthread_create(&timet, NULL, &addtime, (void *)&col);
-	pthread_join(get_by_id(&game->philos, 1)->thread, NULL);
+	start = get_current_time();
+	i = 0;
+	while (i < game->philos.size)
+		pthread_join(get_by_id(&game->philos, ++i)->thread, NULL);
 	pthread_mutex_destroy(&col.count_mutex);
 }

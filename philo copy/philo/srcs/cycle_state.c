@@ -6,13 +6,13 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:07:09 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:56:42 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/17 15:25:25 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-void	cof_checkto_eat(t_col *col, t_philo *philo)
+void	cycle_checkto_eat(t_col *col, t_philo *philo)
 {
 	if (can_eat(*philo) && philo->state == THINKING)
 	{
@@ -38,7 +38,7 @@ void	cof_checkto_eat(t_col *col, t_philo *philo)
 	}
 }
 
-void	cof_checkto_think(t_col *col, t_philo *philo)
+void	cycle_checkto_think(t_col *col, t_philo *philo)
 {
 	if (philo->state == SLEEPING)
 	{
@@ -52,9 +52,9 @@ void	cof_checkto_think(t_col *col, t_philo *philo)
 	}
 }
 
-void	cof_checkto_sleep(t_col *col, t_philo *philo)
+void	cycle_checkto_sleep(t_col *col, t_philo *philo)
 {
-	cof_checkto_eat(col, philo);
+	cycle_checkto_eat(col, philo);
 	if (philo->state == EATING)
 	{
 		if (philo->timevar == col->game->time_to_eat)
@@ -67,6 +67,6 @@ void	cof_checkto_sleep(t_col *col, t_philo *philo)
 		else
 			philo->timevar++;
 	}
-	cof_checkto_think(col, philo);
+	cycle_checkto_think(col, philo);
 	philo->start++;
 }

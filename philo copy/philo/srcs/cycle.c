@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   circleof_1.c                                       :+:      :+:    :+:   */
+/*   cycle.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:05:53 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 14:19:08 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/17 15:28:51 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-int	cof_check_death(t_col *col, int timevar, t_philo *philo)
+int	cycle_check_death(t_col *col, int timevar, t_philo *philo)
 {
 	int	i;
 
@@ -29,7 +29,7 @@ int	cof_check_death(t_col *col, int timevar, t_philo *philo)
 	return (timevar);
 }
 
-void	cof_end(t_col *col, t_philo *philo)
+void	cycle_end(t_col *col, t_philo *philo)
 {
 	int	death;
 	int	i;
@@ -47,7 +47,7 @@ void	cof_end(t_col *col, t_philo *philo)
 	if (death == 1)
 	{
 		if (col->game->finished_eat >= col->game->philos.size)
-			printf("All philos has ate at least %d times",
+			printf("All philos has ate at least %d times\n",
 				col->game->eat_at_least);
 		else
 			printf("%d %d died\n", col->game->time, philo->id);
@@ -55,7 +55,7 @@ void	cof_end(t_col *col, t_philo *philo)
 	pthread_mutex_unlock(&col->count_mutex);
 }
 
-int	cof_check_eatatleast(t_col *col, t_philo *philo, int timeate)
+int	cycle_check_eatatleast(t_col *col, t_philo *philo, int timeate)
 {
 	if (col->game->eat_at_least != -1)
 	{
@@ -73,38 +73,38 @@ int	cof_check_eatatleast(t_col *col, t_philo *philo, int timeate)
 	return (0);
 }
 
-void	cof_setupvar(t_col *col, t_philo *philo)
+void	cycle_setupvar(t_col *col, t_philo *philo)
 {
 	philo->start = 0;
 	philo->timeate = 0;
 	philo->timevar = col->game->time_to_eat;
 }
 
-void	*circle_of_life(void *arg)
+void	*cycle(void *arg)
 {
 	t_col	*col;
 	t_philo	*philo;
 
 	col = (t_col *)arg;
 	philo = get_by_id(&col->game->philos, col->philoid);
-	cof_setupvar(col, philo);
+	cycle_setupvar(col, philo);
 	setup_eat(col, philo);
 	while (philo->start < col->game->time_to_die)
 	{
 		if (philo->actionmade <= col->game->time)
 		{
-			philo->timevar = cof_check_death(col, philo->timevar, philo);
+			philo->timevar = cycle_check_death(col, philo->timevar, philo);
 			if (philo->timevar == -1)
 				return (NULL);
-			cof_checkto_sleep(col, philo);
-			if (cof_check_eatatleast(col, philo, philo->timeate) == 1)
+			cycle_checkto_sleep(col, philo);
+			if (cycle_check_eatatleast(col, philo, philo->timeate) == 1)
 				break ;
 			philo->actionmade = col->game->time;
 			pthread_mutex_unlock(&col->count_mutex);
-			usleep(1000);
+			ft_usleep(1);
 		}
-		usleep(10);
+		usleep(1);
 	}
-	cof_end(col, philo);
+	cycle_end(col, philo);
 	return (NULL);
 }

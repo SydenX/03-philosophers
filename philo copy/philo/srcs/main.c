@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 14:25:17 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/17 15:26:38 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,5 +49,10 @@ int	main(int argc, char **argv)
 	else
 		game.eat_at_least = -1;
 	game.finished_eat = 0;
-	return (threads_init(numphilos, &philos, &game));
+	
+	threads_init(numphilos, &philos, &game);
+	end = get_current_time();
+	printf("time: %zu\n", end - start);
+	return (0);
+	// return (threads_init(numphilos, &philos, &game));
 }

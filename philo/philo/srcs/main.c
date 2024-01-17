@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/16 14:34:16 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/17 14:44:39 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ int	is_any_death(t_game *game)
 	while (i < game->size)
 	{
 		pthread_mutex_lock(&game->philos[i].statem);
-		if (game->tick - game->philos[i].start >= game->time_to_die)
+		game->philos[i].start++;
+		if (game->philos[i].start >= game->time_to_die)
 			return (pthread_mutex_unlock(&game->philos[i].statem), game->philos[i].id);
 		pthread_mutex_unlock(&game->philos[i].statem);
 		i++;
@@ -96,18 +97,85 @@ void	*timer(void *arg)
 	t_game	*game;
 
 	game = (t_game *)arg;
-	game->tick = 0;
 	while (1)
 	{
+		pthread_mutex_lock(&game->locker);
 		if (is_any_death(game) == 0 && is_fully_ate(game) == 0)
 			game->tick++;
 		else
 		{
 			if (is_fully_ate(game) == 0)
-				printf("%d %d died.\n", game->tick, is_any_death(game));
+				printf("%d %d died\n", game->tick, is_any_death(game));
 			else
 				printf("All philos ate at least %d times.\n", game->eat_at_least);
 			break;
+		}
+		pthread_mutex_unlock(&game->locker);
+		ft_usleep(1);
+	}
+	return (NULL);
+}
+
+void	set_eating(t_game *game, t_philo *philo)
+{
+	pthread_mutex_lock(philo->fork_l);
+	printf("%d %d has taken a fork\n", game->tick, philo->id);
+	pthread_mutex_lock(philo->fork_r);
+	printf("%d %d has taken a fork\n", game->tick, philo->id);
+	printf("%d %d is eating\n", game->tick, philo->id);
+	pthread_mutex_lock(&philo->statem);
+	philo->state = EATING;
+	philo->start = 0;
+	pthread_mutex_unlock(&philo->statem);
+	ft_usleep(game->time_to_eat);
+	pthread_mutex_unlock(philo->fork_l);
+	pthread_mutex_unlock(philo->fork_r);
+}
+
+void	*cycle(void *arg)
+{
+	t_game 	*game;
+	t_col	*col;
+	t_philo	*philo;
+
+	col = (t_col *)arg;
+	game = col->game;
+	philo = get_by_id(game, col->philoid);
+	pthread_mutex_unlock(&col->locker);
+	// if (philo->id % 2 == 0)
+	// 	set_eating(game, philo);
+	ft_usleep(1);
+	while (is_any_death(game) == 0 && is_fully_ate(game) == 0)
+	{
+		if (philo->state == THINKING)
+		{
+			pthread_mutex_lock(philo->fork_r);
+			printf("%d %d has taken a fork\n", game->tick, philo->id);
+			pthread_mutex_lock(philo->fork_l);
+			printf("%d %d has taken a fork\n", game->tick, philo->id);
+			pthread_mutex_lock(&philo->statem);
+			philo->state = EATING;
+			philo->start = 0;
+			printf("%d %d is eating\n", game->tick, philo->id);
+			pthread_mutex_unlock(&philo->statem);
+			ft_usleep(game->time_to_eat);
+			pthread_mutex_unlock(philo->fork_l);
+			pthread_mutex_unlock(philo->fork_r);
+		}
+		else if (philo->state == EATING)
+		{
+			pthread_mutex_lock(&philo->statem);
+			philo->state = SLEEPING;
+			printf("%d %d is sleeping\n", game->tick, philo->id);
+			pthread_mutex_unlock(&philo->statem);
+			ft_usleep(game->time_to_sleep);
+		}
+		else if (philo->state == SLEEPING)
+		{
+			pthread_mutex_lock(&philo->statem);
+			philo->state = THINKING;
+			printf("%d %d is thinking\n", game->tick, philo->id);
+			pthread_mutex_unlock(&philo->statem);
 		}
 		ft_usleep(1);
 	}
@@ -117,15 +185,22 @@ void	*timer(void *arg)
 void	run(t_game *game, int i)
 {
 	pthread_t		timert;
+	t_col			col;
 
-	// while (i < game->size)
-	// {
-	// 	pthread_create(&get_by_id(&game, i + 1)->thread,
-	// 		NULL, &circle_of_life, (void *)&game);
-	// 	i++;
-	// }
+	col.game = game;
+	col.game->tick = 0;
+	pthread_mutex_init(&col.locker, NULL);
+	while (i < game->size)
+	{
+		pthread_mutex_lock(&col.locker);
+		col.philoid = i + 1;
+		pthread_create(&get_by_id(game, i + 1)->thread,
+			NULL, &cycle, (void *)&col);
+		i++;
+	}
 	pthread_create(&timert, NULL, &timer, (void *)game);
 	pthread_join(timert, NULL);
+	pthread_mutex_destroy(&col.locker);
 	// while (i < game->size)
 	// 	pthread_mutex_destroy(game->philos[i++].fork_l);
 }
@@ -153,6 +228,8 @@ int	threads_init(int numphilos, t_game *game)
 		philos[i].start = 0;
 		if (i == numphilos - 1)
 			philos[i].fork_l = &game->forks[0];
+		else
+			philos[i].fork_l = &game->forks[i + 1];
 		i++;
 	}
 	game->philos = philos;

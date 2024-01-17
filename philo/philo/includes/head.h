@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/16 14:30:54 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/17 14:18:19 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ typedef struct s_game {
 	t_philo			*philos;
 	int				size;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	locker;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
@@ -53,6 +54,12 @@ typedef struct s_game {
 	int				finished_eat;
 	int				tick;
 }	t_game;
+
+typedef struct s_col {
+	t_game			*game;
+	int				philoid;
+	pthread_mutex_t	locker;
+}	t_col;
 
 long	ft_atoi(const char *str);
 int	isint(char *str);
