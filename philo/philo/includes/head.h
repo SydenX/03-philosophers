@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/17 14:18:19 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/18 14:55:11 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,46 +20,33 @@
 # include <pthread.h>
 # include <string.h>
 
-typedef enum e_state {
-	EATING,
-	SLEEPING,
-	THINKING,
-	DEAD
-}	t_state;
-
-typedef struct s_philo {
-	int				id;
-	int				timetodie;
-	t_state			state;
-	pthread_mutex_t	*fork_l;
-	pthread_mutex_t	*fork_r;
-	pthread_mutex_t	statem;
-	pthread_t		thread;
-	int				finished_eat;
-	int				actionmade;
-	int				start;
-	int				timevar;
-	int				timeate;
-}	t_philo;
+typedef struct s_fork {
+	int				taken;
+	int				takenBy;
+	pthread_mutex_t	locker;
+}	t_fork;
 
 typedef struct s_game {
-	t_philo			*philos;
 	int				size;
-	pthread_mutex_t	*forks;
 	pthread_mutex_t	locker;
+	pthread_t		thread;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				eat_at_least;
-	int				finished_eat;
-	int				tick;
+	int				is_over;
+	long			start;
 }	t_game;
 
-typedef struct s_col {
+typedef struct s_philo {
+	int				id;
+	t_fork			*fork_l;
+	t_fork			*fork_r;
+	pthread_mutex_t	last_ate;
+	pthread_t		thread;
+	int				times_ate;
 	t_game			*game;
-	int				philoid;
-	pthread_mutex_t	locker;
-}	t_col;
+}	t_philo;
 
 long	ft_atoi(const char *str);
 int	isint(char *str);
