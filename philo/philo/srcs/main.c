@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/18 15:43:56 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/18 15:53:43 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,34 @@ int	check_args(int argc, char **argv)
 
 }
 
+void	*timing(void *arg)
+{
+	return (NULL);
+}
+
+void	*cycle(void *arg)
+{
+	return (NULL);
+}
+
+void	join_threads(t_philo philos[200])
+{
+	int	i;
+
+	i = 0;
+	while (i < philos[0].game->size)
+	{
+		pthread_join(philos[i].thread, NULL);
+		i++;
+	}
+}
+
 void	init_philos(t_game *game, t_philo philos[200], t_fork forks[200])
 {
 	int	i;
 
 	i = 0;
+	game->start = get_current_time();
 	while (i < game->size)
 	{
 		philos[i].id = i;
@@ -48,8 +71,11 @@ void	init_philos(t_game *game, t_philo philos[200], t_fork forks[200])
 		philos[i].times_ate = 0;
 		pthread_mutex_init(&philos[i].fork_r->locker, NULL);
 		pthread_mutex_init(&philos[i].last_ate, NULL);
+		pthread_create(i, NULL, &cycle, &philos[i]);
 		i++;
 	}
+	pthread_create(i, NULL, &timing, &philos);
+	join_threads(philos);
 }
 
 int	init_game(int argc, char *argv[], t_game *game)
