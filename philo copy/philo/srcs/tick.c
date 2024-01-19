@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:16:27 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/17 15:32:27 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/19 14:08:32 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,16 @@ size_t	get_current_time(void)
 
 int	check_to_addtime(void *arg)
 {
-	t_game	*game;
+	t_philo	*philos;
 	int		death;
 	int		i;
 
-	game = (t_game *)arg;
+	philos = (t_philo *)arg;
 	death = 0;
 	i = 0;
-	while (i < game->philos.size)
+	while (i < philos[0].game->size)
 	{
-		if (game->philos.philo[i].state == DEAD)
+		if (philos[0].state == DEAD)
 		{
 			death++; 
 			break ;

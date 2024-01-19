@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 13:09:15 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/17 15:26:18 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/19 14:13:24 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	threads_init(int numphilos, t_philos *philos, t_game *game)
 	int			i;
 
 	i = 0;
+	pthread_mutex_init(&game->count_mutex, NULL);
 	if (numphilos == 1)
 	{
 		pthread_create(&mainthread, NULL, &one_philo, (void *)game);
@@ -29,11 +30,12 @@ int	threads_init(int numphilos, t_philos *philos, t_game *game)
 		philos->philo[i].id = i + 1;
 		philos->philo[i].state = THINKING;
 		philos->philo[i].actionmade = -1;
+		philos->philo[i].game = game;
 		i++;
 	}
-	game->philos = *philos;
-	setup_philos(&game->philos);
+	setup_philos(&philos, game);
 	run(game, 0);
+	pthread_mutex_destroy(&game->count_mutex);
 	return (free(philos->philo), 0);
 }
 
@@ -53,26 +55,20 @@ void	*one_philo(void *arg)
 	return (printf("%d %d died\n", start, 1), NULL);
 }
 
-void	run(t_game *game, int i)
+void	run(t_philos *philos, int i)
 {
 	pthread_t		timet;
-	t_col			col;
 
-	col.game = game;
-	col.game->time = 0;
-	pthread_mutex_init(&col.count_mutex, NULL);
-	while (i < game->philos.size)
+	philos->philo[0].game->time = 0;
+	while (i < philos->philo[0].game->size)
 	{
-		pthread_mutex_lock(&col.count_mutex);
-		col.philoid = i + 1;
-		pthread_create(&get_by_id(&game->philos, i + 1)->thread,
-			NULL, &cycle, (void *)&col);
+		pthread_create(&get_by_id(&philos, i + 1)->thread,
+			NULL, &cycle, (void *)&philos);
 		i++;
 	}
-	pthread_create(&timet, NULL, &addtime, (void *)&col);
+	pthread_create(&timet, NULL, &addtime, (void *)&philos);
 	start = get_current_time();
 	i = 0;
-	while (i < game->philos.size)
-		pthread_join(get_by_id(&game->philos, ++i)->thread, NULL);
-	pthread_mutex_destroy(&col.count_mutex);
+	while (i < philos->size)
+		pthread_join(get_by_id(&philos, ++i)->thread, NULL);
 }

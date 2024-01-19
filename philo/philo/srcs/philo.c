@@ -5,50 +5,70 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/11 15:19:43 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/15 13:37:43 by jtollena         ###   ########.fr       */
+/*   Created: 2024/01/19 15:17:39 by jtollena          #+#    #+#             */
+/*   Updated: 2024/01/19 15:25:18 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "head.h"
 
-int	can_eat(t_philo philo)
+int	should_be_dead(t_philo *philos, long tick)
 {
-	if (philo.state == EATING)
-		return (0);
-	if (philo.left->state == EATING || philo.right->state == EATING)
-		return (0);
+	int		last_ate_time;
+
+	pthread_mutex_lock(&philos->last_ate);
+	last_ate_time = tick - philos->last_ate_time;
+	pthread_mutex_unlock(&philos->last_ate);
+	if (last_ate_time > philos->game->time_to_die)
+	{
+		pthread_mutex_lock(&philos->game->locker);
+		pthread_mutex_lock(&philos->game->logger);
+		printf("%ld %d died\n", tick, philos->id + 1);
+		philos->game->is_over = 1;
+		pthread_mutex_unlock(&philos->game->locker);
+		pthread_mutex_unlock(&philos->game->logger);
+		return (1);
+	}
+	return (0);
+}
+
+int	has_everyone_ate(t_philo *philos)
+{
+	int	i;
+	int	hasate;
+
+	hasate = 0;
+	i = 0;
+	while (i < philos[0].game->size)
+	{
+		pthread_mutex_lock(&philos[i].last_ate);
+		if (philos[i].times_ate >= philos[0].game->eat_at_least)
+			hasate++;
+		pthread_mutex_unlock(&philos[i].last_ate);
+		i++;
+	}
+	if (hasate == philos[0].game->size)
+		return (1);
+	return (0);
+}
+
+int	is_alive(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->game->locker);
+	if (philo->game->is_over == 1)
+		return (pthread_mutex_unlock(&philo->game->locker), 0);
+	pthread_mutex_unlock(&philo->game->locker);
 	return (1);
 }
 
-void	setup_philos(t_philos *philos)
+void	everyone_ate(t_philo *philos)
 {
-	int	i;
-
-	i = 1;
-	while (i <= philos->size && philos->size > 1)
-	{
-		if (i == philos->size)
-			philos->philo[i - 1].left = get_by_id(philos, 1);
-		else
-			philos->philo[i - 1].left = get_by_id(philos, i + 1);
-		if (i == 1)
-			philos->philo[i - 1].right = get_by_id(philos, philos->size);
-		else
-			philos->philo[i - 1].right = get_by_id(philos, i - 1);
-		i++;
-	}
-}
-
-void	setup_eat(t_col *col, t_philo *philo)
-{
-	if (philo->id % 2 == 0 && can_eat(*philo))
-	{
-		philo->state = EATING;
-		pthread_mutex_unlock(&col->count_mutex);
-	}
-	else
-		pthread_mutex_unlock(&col->count_mutex);
-	philo->start = 0;
-	philo->timeate = 0;
+	pthread_mutex_lock(&philos[0].game->locker);
+	pthread_mutex_lock(&philos[0].game->logger);
+	printf("All philos has ate at least %d times.\n",
+		philos[0].game->eat_at_least);
+	philos[0].game->is_over = 1;
+	pthread_mutex_unlock(&philos[0].game->locker);
+	pthread_mutex_unlock(&philos[0].game->logger);
+	pthread_exit(NULL);
 }

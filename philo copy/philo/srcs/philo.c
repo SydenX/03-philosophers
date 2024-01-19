@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 15:19:43 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/17 15:24:06 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/19 14:18:43 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,14 @@ int	can_eat(t_philo philo)
 	return (1);
 }
 
-void	setup_philos(t_philos *philos)
+void	setup_philos(t_philos *philos, t_game *game)
 {
 	int	i;
 
 	i = 1;
 	while (i <= philos->size && philos->size > 1)
 	{
+		philos->philo->game = game;
 		if (i == philos->size)
 			philos->philo[i - 1].left = get_by_id(philos, 1);
 		else
@@ -40,15 +41,15 @@ void	setup_philos(t_philos *philos)
 	}
 }
 
-void	setup_eat(t_col *col, t_philo *philo)
+void	setup_eat(t_philo *philo)
 {
 	if (philo->id % 2 == 0 && can_eat(*philo))
 	{
 		philo->state = EATING;
-		pthread_mutex_unlock(&col->count_mutex);
+		pthread_mutex_unlock(&philo->game->count_mutex);
 	}
 	else
-		pthread_mutex_unlock(&col->count_mutex);
+		pthread_mutex_unlock(&philo->game->count_mutex);
 	philo->start = 0;
 	philo->timeate = 0;
 }
