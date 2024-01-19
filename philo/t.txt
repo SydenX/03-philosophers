@@ -1,0 +1,42 @@
+-Check les arguments
+-Setup la game, size, time_to_*, init 2 mutex (1 pour le timer et 1 pour send les messages)
+-Setup les philos, id, game = *game, right fork = fork[id], left fork = fork[id + 1], init mutex left fork et dernier repas
+-Setup les threads, pour chaque philos, thread create philos[id] &cycle(), et thread timer &timer() avec tout les philos en argument
+-- Cycle()
+	si philo id % 2 == 0 -> sleep(time_to_eat)
+	loop tant que le philo n'est pas mort (pour check la mort -> lock le game timer mutex pour pouvoir check la valeur de game.is_dead)
+		check si le nombre de repas est >= au repas max -> break
+		prendre la left_fork (si le philo est alive, lock mutex fork, si le fork n'appartient pas au philo et n'est pas utilise, set le fork comme utilise appartenant au philo et unlock le mutex du fork + message sinon unlock le mutex du fork)
+		check si la left_fork appartient bien aux philo, prendre la right_fork
+		si les 2 forks appartiennent au philo
+			sleep(eat time)
+			lock mutex dernier repas
+			heure de dernier repas = gettime - starttime
+			unlock le mutex
+			poser les forks (lock le mutex du fork, le set comme unused et comme non appartenant a philo, unlock le mutex)
+			dormir (sleep(sleep time))
+-- Timer()
+	infinite loop
+		calcul current tick = gettime - start time
+		pour chaque philos
+			lock le mutex repas pour set une variable dernier_repas sur tick - philo.dernier repas
+			unlock mutex
+			si le dernier repas est > que le die time
+			on lock les 2 game mutex pour dire que la game est finie,
+			on unlock le mutex de timer
+			message de mort
+			unlock mutex
+		sleep(1 ms)
+-Pour chaque philos
+	on join le thread
+
++Pour ecrire un message, recup le tick = gettime - starttime, lock le mutex log, check si le philo est alive, print, unlock le mutex
+
+
+
+
+
+
+
+
+
