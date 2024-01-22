@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/19 15:27:51 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/22 10:47:34 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ typedef struct s_philo {
 	int				took_l;
 	int				took_r;
 	pthread_mutex_t	last_ate;
-	int				last_ate_time;
-	pthread_t		thread;
+	long			last_ate_time;
 	int				times_ate;
+	pthread_t		thread;
 	t_game			*game;
 }	t_philo;
 

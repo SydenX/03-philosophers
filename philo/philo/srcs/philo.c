@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 15:17:39 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/19 15:25:18 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/22 11:39:43 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ int	should_be_dead(t_philo *philos, long tick)
 	if (last_ate_time > philos->game->time_to_die)
 	{
 		pthread_mutex_lock(&philos->game->locker);
-		pthread_mutex_lock(&philos->game->logger);
-		printf("%ld %d died\n", tick, philos->id + 1);
 		philos->game->is_over = 1;
 		pthread_mutex_unlock(&philos->game->locker);
+		pthread_mutex_lock(&philos->game->logger);
+		printf("%ld %d died\n", tick, philos->id + 1);
 		pthread_mutex_unlock(&philos->game->logger);
 		return (1);
 	}
@@ -64,11 +64,7 @@ int	is_alive(t_philo *philo)
 void	everyone_ate(t_philo *philos)
 {
 	pthread_mutex_lock(&philos[0].game->locker);
-	pthread_mutex_lock(&philos[0].game->logger);
-	printf("All philos has ate at least %d times.\n",
-		philos[0].game->eat_at_least);
 	philos[0].game->is_over = 1;
 	pthread_mutex_unlock(&philos[0].game->locker);
-	pthread_mutex_unlock(&philos[0].game->logger);
 	pthread_exit(NULL);
 }

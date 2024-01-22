@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/19 15:25:51 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/22 11:50:50 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,5 +52,15 @@ int	main(int argc, char **argv)
 	if (init == 2)
 		return (0);
 	init_philos(&game, philos, forks);
+	pthread_mutex_destroy(&game.locker);
+	pthread_mutex_destroy(&game.logger);
+	init = 0;
+	while (init < game.size)
+	{
+		pthread_mutex_destroy(&philos[init].fork_l->locker);
+		pthread_mutex_destroy(&philos[init].fork_r->locker);
+		pthread_mutex_destroy(&philos[init].last_ate);
+		init++;
+	}
 	return (0);
 }

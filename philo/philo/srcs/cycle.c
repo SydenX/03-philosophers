@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 15:05:56 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/19 15:34:09 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/22 10:41:15 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	take_a_fork(t_forktype fork, t_philo *philo)
 		return ;
 	}
 	pthread_mutex_lock(&philo->fork_r->locker);
-	if (philo->fork_r->taken == 0 && philo->fork_l->taken_by != philo->id
+	if (philo->fork_r->taken == 0 && philo->fork_r->taken_by != philo->id
 		&& is_alive(philo))
 	{
 		philo->fork_r->taken = 1;
