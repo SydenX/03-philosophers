@@ -6,7 +6,7 @@
 #    By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/30 13:47:45 by jtollena          #+#    #+#              #
-#    Updated: 2024/01/22 11:17:50 by jtollena         ###   ########.fr        #
+#    Updated: 2024/01/22 12:17:18 by jtollena         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,6 @@ clean:
 	
 $(NAME): $(OBJECTS) $(INCLUDES)
 	gcc $(FLAGS) $(OBJECTS) -lpthread -o $(NAME)
-	make clean
 
 fclean: clean
 	rm $(NAME)
