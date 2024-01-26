@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 15:15:02 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/22 11:48:05 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/26 16:30:30 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void	init_philos(t_game *game, t_philo philos[200], t_fork forks[200])
 		philos[i].game = game;
 		philos[i].last_ate_time = 0;
 		philos[i].times_ate = 0;
+		philos[i].is_over = 1;
 		pthread_mutex_init(&philos[i].fork_l->locker, NULL);
 		pthread_mutex_init(&philos[i].last_ate, NULL);
 		i++;
@@ -79,7 +80,6 @@ int	init_game(int argc, char *argv[], t_game *game)
 	game->time_to_die = ft_atoi(argv[2]);
 	game->time_to_eat = ft_atoi(argv[3]);
 	game->time_to_sleep = ft_atoi(argv[4]);
-	game->is_over = 0;
 	if (argc == 6)
 		game->eat_at_least = ft_atoi(argv[5]);
 	else
@@ -108,7 +108,17 @@ void	*timing(void *arg)
 		while (i < philos[0].game->size)
 		{
 			if (should_be_dead(&philos[i], tick) == 1)
+			{
+				i = 0;
+				while (i < philos[0].game->size)
+				{
+					pthread_mutex_lock(&philos[i].last_ate);
+					philos[i].is_over = 1;
+					pthread_mutex_unlock(&philos[i].last_ate);
+					i++;
+				}
 				pthread_exit(NULL);
+			}
 			i++;
 		}
 		ft_usleep(1);

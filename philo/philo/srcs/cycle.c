@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/19 15:05:56 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/22 10:41:15 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/26 16:12:59 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,11 @@ void	take_a_fork(t_forktype fork, t_philo *philo)
 			philo->fork_l->taken = 1;
 			philo->fork_l->taken_by = philo->id;
 			philo->took_l = 1;
+			pthread_mutex_unlock(&philo->fork_l->locker);
 			print_msg(philo, "has taken a fork");
 		}
-		pthread_mutex_unlock(&philo->fork_l->locker);
+		else
+			pthread_mutex_unlock(&philo->fork_l->locker);
 		return ;
 	}
 	pthread_mutex_lock(&philo->fork_r->locker);
@@ -35,9 +37,11 @@ void	take_a_fork(t_forktype fork, t_philo *philo)
 		philo->fork_r->taken = 1;
 		philo->fork_r->taken_by = philo->id;
 		philo->took_r = 1;
+		pthread_mutex_unlock(&philo->fork_r->locker);
 		print_msg(philo, "has taken a fork");
 	}
-	pthread_mutex_unlock(&philo->fork_r->locker);
+	else
+		pthread_mutex_unlock(&philo->fork_r->locker);
 }
 
 void	release_a_fork(t_forktype fork, t_philo *philo)

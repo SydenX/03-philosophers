@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:26:03 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/22 10:47:34 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/26 16:21:07 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ typedef struct s_game {
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				eat_at_least;
-	int				is_over;
 	long			start;
 }	t_game;
 
@@ -54,6 +53,7 @@ typedef struct s_philo {
 	long			last_ate_time;
 	int				times_ate;
 	pthread_t		thread;
+	int				is_over;
 	t_game			*game;
 }	t_philo;
 
