@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 14:25:29 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/22 11:50:50 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/29 12:23:18 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,14 @@ void	print_msg(t_philo *philo, char *msg)
 	int	tick;
 
 	tick = get_current_time() - philo->game->start;
-	pthread_mutex_lock(&philo->game->logger);
 	if (is_alive(philo))
+	{
+		pthread_mutex_lock(&philo->game->logger);
 		printf("%d %d %s\n", tick, philo->id + 1, msg);
-	pthread_mutex_unlock(&philo->game->logger);
+		pthread_mutex_unlock(&philo->game->logger);
+	}
+	else
+		pthread_exit(NULL);
 }
 
 int	main(int argc, char **argv)
@@ -58,7 +62,6 @@ int	main(int argc, char **argv)
 	while (init < game.size)
 	{
 		pthread_mutex_destroy(&philos[init].fork_l->locker);
-		pthread_mutex_destroy(&philos[init].fork_r->locker);
 		pthread_mutex_destroy(&philos[init].last_ate);
 		init++;
 	}

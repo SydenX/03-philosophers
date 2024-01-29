@@ -6,7 +6,7 @@
 /*   By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 15:02:44 by jtollena          #+#    #+#             */
-/*   Updated: 2024/01/19 14:56:36 by jtollena         ###   ########.fr       */
+/*   Updated: 2024/01/29 11:55:36 by jtollena         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	ft_usleep(size_t milliseconds)
 
 	start = get_current_time();
 	while ((get_current_time() - start) < milliseconds)
-		usleep(100);
+		usleep(250);
 	return (0);
 }
 

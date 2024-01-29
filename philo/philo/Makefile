@@ -6,7 +6,7 @@
 #    By: jtollena <jtollena@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/30 13:47:45 by jtollena          #+#    #+#              #
-#    Updated: 2024/01/26 16:14:08 by jtollena         ###   ########.fr        #
+#    Updated: 2024/01/29 12:24:43 by jtollena         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ SOURCES = srcs/main.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 INCLUDES = includes
-FLAGS = -Wall -Wextra -Werror -g -fsanitize=thread
+FLAGS = -Wall -Wextra -Werror
 
 %.o: %.c
 	gcc $(FLAGS) -I $(INCLUDES) -c $< -o $@
@@ -33,7 +33,6 @@ clean:
 	
 $(NAME): $(OBJECTS) $(INCLUDES)
 	gcc $(FLAGS) $(OBJECTS) -lpthread -o $(NAME)
-	make clean
 
 fclean: clean
 	rm $(NAME)
